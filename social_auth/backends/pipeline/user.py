@@ -101,7 +101,7 @@ def django_orm_maxlength_truncate(backend, details, user=None, is_new=False,
     if user is None:
         return
     out = {}
-    names = user._meta.get_all_field_names()
+    names = (field.name for field in _User._meta.get_fields())
     for name, value in details.iteritems():
         if name in names and not _ignore_field(name, is_new):
             max_length = user._meta.get_field(name).max_length

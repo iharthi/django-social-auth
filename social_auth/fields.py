@@ -15,7 +15,6 @@ class JSONField(models.TextField):
     """Simple JSON field that stores python structures as JSON strings
     on database.
     """
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         """
@@ -27,10 +26,13 @@ class JSONField(models.TextField):
         if isinstance(value, basestring):
             try:
                 return simplejson.loads(value)
-            except Exception, e:
+            except Exception as e:
                 raise ValidationError(str(e))
         else:
             return value
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
     def validate(self, value, model_instance):
         """Check value is a valid JSON string, raise ValidationError on

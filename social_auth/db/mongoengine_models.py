@@ -9,8 +9,8 @@ try:
 except (ImportError, AttributeError):
     UNUSABLE_PASSWORD = '!'
 
-from django.db.models import get_model
-from django.utils.importlib import import_module
+from django.apps import apps
+from importlib import import_module
 
 from mongoengine import DictField, Document, IntField, ReferenceField, \
                         StringField
@@ -25,7 +25,8 @@ USER_MODEL_APP = setting('SOCIAL_AUTH_USER_MODEL') or \
                  setting('AUTH_USER_MODEL')
 
 if USER_MODEL_APP:
-    USER_MODEL = get_model(*USER_MODEL_APP.rsplit('.', 1))
+    app_name, model_name = user_model.split(".")
+    USER_MODEL = apps.get_app_config(app_name).get_model(model_name)
 else:
     USER_MODEL_MODULE, USER_MODEL_NAME = \
         'mongoengine.django.auth.User'.rsplit('.', 1)
